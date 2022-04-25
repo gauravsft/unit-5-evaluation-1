@@ -1,68 +1,79 @@
-var part1 = document.getElementById("part-1");
-var url = "https://pokeapi.co/api/v2/ability/?limit=20&offset=20/pokemon";
-var pArr;
-if(localStorage.getItem('pArr')== null){
-    pArr = [];
-}else{
-    pArr = JSON.parse(localStorage.getItem('pArr'));
+var container = document.querySelector('#container');
+var searchtext = document.querySelector('#searchtext');
+var display = document.querySelector('#display')
+
+if (localStorage.getItem('pokemon') == null) {
+    getdata()
+    setTimeout(displayname, 1000)
+} else {
+    console.log('data stored alreaaady')
+    displayname()
 }
 
-fetch(url)
-.then(response=>response.json())
-.then(response=>pokemon(response.results))
 
-function pokemon(data){
-    if(pArr){
-        displayData(data);
-    }
-}
-let pList = document.createElement("div");
-function displayData(data){
-    data.forEach(element => {
-        var pokName = document.createElement("h3");
-        pokName.innerText = element.name;
-        // console.log(pokName);
-        pArr.push(element.name);
-        pList.append(pokName);
+async function getdata() {
+    var res = await fetch('https://pokeapi.co/api/v2/pokemon')
+    // console.log(res)
+    var data = await res.json()
+    // console.log(data.results)
+    //getinfo(data.results)
+    var arr = []
+    data.results.forEach(element => {
+        arr.push(element.name)
     });
-    part1.append(pList);
-    localStorage.setItem('pArr',JSON.stringify(pArr));
+    // console.log(arr)
+    localStorage.setItem('pokemon', JSON.stringify(arr))
 }
 
-
-document.getElementById("form").addEventListener('submit',(eventt)=>{
-    eventt.preventDefault();
-    var name = document.getElementById("name").value;
-    searchPokemon(name);
-})
-
-function searchPokemon(name){
-    fetch(`https://pokeapi.co/api/v2/pokemon/${name}`)
-    .then(response=>response.json())
-    .then(response=>displaySearched(response))
+function displayname() {
+    var data = JSON.parse(localStorage.getItem('pokemon'))
+    data.forEach(element => {
+        var tr = document.createElement('tr')
+        tr.innerHTML =
+            `
+            <td>${element}</td>
+        `
+        container.append(tr)
+    });
 }
-/*
-id
-name (pokemon name)
-height
-weight
-abilities ( just the names of all abilities of pokemon separated by commas )
-moves ( just the names of all moves of pokemon separated by commas )
-*/
-function displaySearched(pok){
-    var container = document.getElementById("part-2-container");
-    container.innerText = "";
-    var baseExperience = document.createElement("h3");
-    var name = document.createElement("h3");
-    var height = document.createElement("h3");
-    var weight = document.createElement("h3");
-    var abilities = document.createElement("h3");
-    var moves = document.createElement("h3");
-    name.innerText = "Pokemon Name :" + pok.forms[0].name;
-    height.innerText = "Height : " + pok.height;
-    weight.innerText = "Weight : " + pok.weight;
-    abilities.innerText = "Ability : " + pok.abilities[1].ability.name;
-    baseExperience.innerText = "Base Experience :"+ pok.base_experience;
-    moves.innerText = "Moves :"+ pok.moves[0].move.name;
-    container.append(name,baseExperience,height,abilities,moves);
+
+//
+function search() {
+    console.log(searchtext.value)
+    display.innerHTML = ''
+    async function getinfo() {
+        var res = await fetch(`https://pokeapi.co/api/v2/pokemon/${searchtext.value}`)
+        // console.log(res)
+        var data = await res.json()
+
+        var abi = []
+        var move = []
+        var id = data.id
+        var height = data.height
+        var weight = data.weight
+
+        data.abilities.forEach(element => {
+            abi.push(element.ability.name)
+        });
+        data.moves.forEach(element => {
+            move.push(element.move.name)
+        });
+       
+
+        var div = document.createElement('div')
+        var info = 
+        `
+            <h1>ID : ${id}</h1>
+            <h1>Pokemon Name : ${searchtext.value}</h1>
+            <h2>Pokemon Height : ${height}</h2>
+            <h3>Pokemon Weight : ${weight}</h3>
+            <h3>Pokemon Abilities : </h3>
+            <p>${abi.join(',')}</p>
+            <h3>Pokemon Moves : </h3>
+            <p>${move.join(',')}</p>
+        `
+        div.innerHTML = info
+        display.append(div)
+    }
+    getinfo()
 }

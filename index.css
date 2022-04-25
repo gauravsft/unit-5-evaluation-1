@@ -1,22 +1,19 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap');
-
-*{
-    font-family: 'Noto Sans', sans-serif;
-    text-align: center;
+body{
+    display: flex;
 }
-h1{
-    color:dimgray;
+table{
+    min-width: 150px;
 }
-form{
-    background-color: thistle;
-    padding: 15px;
+td{
+    background-color: grey;
+    color: white;
 }
-#part-2-container{
-    background-color: gainsboro;
-    border: 2px solid black;
+button{
+    background-color: black;
+    color: white;
+    border: none;
+    padding: 6px 15px;
 }
-#part-1{
-  background-color: seashell;
-  margin: auto;
-  width: 30%;
+button:hover{
+    color: blue;
 }
